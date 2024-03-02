@@ -1,7 +1,5 @@
 docker:
   image: yegor256/rultor-image:1.20.0
-assets:
-  npmrc: yegor256/objectionary-secrets#npmrc
 install: |
   pip install git+https://chromium.googlesource.com/external/gyp
   npm install --no-color
@@ -17,7 +15,7 @@ release:
     grunt --no-color
     git commit -am "set version to ${tag}"
     chmod 600 ../npmrc
-    npm publish --no-color --userconfig=../npmrc
+    npm publish --no-color
 merge:
   script: |-
     grunt --no-color
