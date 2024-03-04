@@ -5,6 +5,52 @@ const {LAMBDA, RHO} = require('./attribute/specials')
 const at_simple = require('./attribute/at-simple')
 
 /**
+ * Try to find object by given directory and FQN.
+ * Context "this" should be set to the object {@link pckg}.
+ * @param {String} dir - Relative directory where object may be placed
+ * @param {String} name - Name of the current object
+ * @param {array.<String>} fqn - Parts of FQN of the object. E.g. ['org', 'eolang', 'int']
+ * @return {Object|null} - Found object or null
+ */
+const tryFind = function(dir, name, fqn) {
+  let obj = null
+  const pth = path.resolve(__dirname, dir, ...fqn)
+  if (fs.existsSync(pth)) {
+    obj = pckg(name, this)
+    this.attrs[name] = at_simple(obj)
+  } else {
+    const file = `${pth}.js`
+    if (fs.existsSync(file)) {
+      obj = require(file)(this)
+      this.attrs[name] = at_simple(obj)
+    }
+  }
+  return obj
+}
+
+/**
+ * Found object.
+ * Tries to find object in local directory. If there's no luck, checks if
+ * we're in the "node_modules" directory (which means, that eo2js-runtime is used as
+ * dependency). If so - tries to find object in main project directory.
+ * Context "this" should be set to the object {@link pckg}.
+ * @param {String} name - Name of the object
+ * @param {String} full - FQN of the object
+ * @return {Object} - Found object
+ */
+const found = function(name, full) {
+  const split = full.split('.')
+  let obj = tryFind.call(this, '../objects', name, split)
+  if (obj == null && __dirname.includes('node_modules')) {
+    obj = tryFind.call(this, '../../../..', name, split)
+  }
+  if (obj == null) {
+    throw new Error(`Couldn't find object ${name} from ${full}`)
+  }
+  return obj
+}
+
+/**
  * Package object.
  * @param {String} fqn - FQN of package object
  * @param {object} sigma - Sigma
@@ -29,19 +75,7 @@ const pckg = function(fqn, sigma) {
     } else if (!name.includes('.')) {
       const before = this.assets[LAMBDA](this)
       const full = before === '' ? name : `${before.substring(1)}.${name}`
-      const pth = path.resolve(__dirname, '../objects', ...full.split('.'))
-      if (fs.existsSync(pth) && fs.statSync(pth).isDirectory()) {
-        obj = pckg(name, this)
-        this.attrs[name] = at_simple(obj)
-      } else {
-        const file = `${pth}.js`
-        if (fs.existsSync(file) && fs.statSync(file).isFile()) {
-          obj = require(file)(this)
-          this.attrs[name] = at_simple(obj)
-        } else {
-          throw new Error(`Couldn't find directory ${pth} or file ${file}`)
-        }
-      }
+      obj = found.call(this, name, full)
     } else {
       const split = name.split('.')
       let next = this.take(split[0])

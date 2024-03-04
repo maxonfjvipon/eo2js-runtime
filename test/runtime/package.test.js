@@ -2,82 +2,112 @@ const phi = require('../../src/runtime/phi')
 const {RHO, SIGMA, VTX} = require('../../src/runtime/attribute/specials')
 const assert = require('assert')
 const pckg = require('../../src/runtime/package')
+const fs = require('fs');
+const path = require('path');
 
-describe('Empty package object', function() {
-  it('should be child of phi', function() {
-    assert.deepStrictEqual(phi.take('').take(RHO), phi)
+describe('package object', function() {
+  afterEach('clear temp', function() {
+    const temp = path.resolve(__dirname, 'temp')
+    if (fs.existsSync(temp)) {
+      fs.rmSync(temp, {recursive: true})
+    }
   })
-  it('should have special attributes', function() {
-    const obj = pckg('', {})
-    assert.ok(obj.attrs.hasOwnProperty(RHO))
-    assert.ok(obj.attrs.hasOwnProperty(SIGMA))
-    assert.ok(obj.attrs.hasOwnProperty(VTX))
-  })
-  describe('#take()', function() {
-    it('should return next level package object', function() {
+  describe('empty', function() {
+    it('should be child of phi', function() {
+      assert.deepStrictEqual(phi.take('').take(RHO), phi)
+    })
+    it('should have special attributes', function() {
       const obj = pckg('', {})
-      assert.notDeepStrictEqual(obj.take('org'), obj)
+      assert.ok(obj.attrs.hasOwnProperty(RHO))
+      assert.ok(obj.attrs.hasOwnProperty(SIGMA))
+      assert.ok(obj.attrs.hasOwnProperty(VTX))
     })
-    it('should return child of empty package object', function() {
-      const obj = pckg('', {})
-      assert.deepStrictEqual(obj.take('org').take(RHO), obj)
+    describe('#take()', function() {
+      it('should return next level package object', function() {
+        const obj = pckg('', {})
+        assert.notDeepStrictEqual(obj.take('org'), obj)
+      })
+      it('should return child of empty package object', function() {
+        const obj = pckg('', {})
+        assert.deepStrictEqual(obj.take('org').take(RHO), obj)
+      })
+      it('should cache next level object', function() {
+        const obj = pckg('', {})
+        assert.deepStrictEqual(obj.take('org'), obj.take('org'))
+      })
+      it('should fail on wrong path', function() {
+        assert.throws(() => pckg('', {}).take('wrong'))
+      })
+      it('should return the same next level object with and without dots', function() {
+        const obj = pckg('', {})
+        assert.deepStrictEqual(
+          obj.take('org').take('eolang'),
+          obj.take('org.eolang')
+        )
+      })
+      it('should not fail if finds EO object', function() {
+        assert.doesNotThrow(() => pckg('', {}).take('org.eolang.io.stdout').toString())
+      })
+      it('should find object outside "node_modules"', function() {
+        const modules = path.resolve(__dirname, 'temp/node_modules')
+        fs.mkdirSync(modules, {recursive: true})
+        fs.cpSync(
+          path.resolve(__dirname, '../../src'),
+          path.resolve(modules, 'eo2js-runtime/src'),
+          {recursive: true}
+        )
+        const eolang = path.resolve(__dirname, 'temp/org/eolang')
+        fs.mkdirSync(eolang, {recursive: true})
+        fs.writeFileSync(
+          path.resolve(eolang, 'dummy.js'),
+          'module.exports = function (_) { return {name: "Dummy"} }'
+        )
+        const pack = require(
+          path.resolve(__dirname, 'temp/node_modules/eo2js-runtime/src/runtime/package')
+        )
+        const dummy = pack('', phi).take('org.eolang.dummy')
+        assert.equal(dummy.name, 'Dummy')
+      })
     })
-    it('should cache next level object', function() {
-      const obj = pckg('', {})
-      assert.deepStrictEqual(obj.take('org'), obj.take('org'))
+    describe('#with()', function() {
+      it('should fail on put', function() {
+        assert.throws(() => pckg('', {}).with({0: 'any'}))
+      })
     })
-    it('should fail on wrong path', function() {
-      assert.throws(() => pckg('', {}).take('wrong'))
-    })
-    it('should return the same next level object with and without dots', function() {
-      const obj = pckg('', {})
-      assert.deepStrictEqual(
-        obj.take('org').take('eolang'),
-        obj.take('org.eolang')
-      )
-    })
-    it('should return valid EO object', function() {
-      assert.doesNotThrow(() => pckg('', {}).take('org.eolang.io.stdout').toString())
+    describe('#copy()', function() {
+      it('should return itself', function() {
+        const obj = pckg('', {})
+        assert.deepStrictEqual(obj.copy(), obj)
+      })
     })
   })
-  describe('#with()', function() {
-    it('should fail on put', function() {
-      assert.throws(() => pckg('', {}).with({0: 'any'}))
+  describe('"org"', function() {
+    it('should have special attributes', function() {
+      const obj = pckg('', {}).take('org')
+      assert.ok(obj.attrs.hasOwnProperty(RHO))
+      assert.ok(obj.attrs.hasOwnProperty(SIGMA))
+      assert.ok(obj.attrs.hasOwnProperty(VTX))
     })
-  })
-  describe('#copy()', function() {
-    it('should return itself', function() {
-      const obj = pckg('', {})
-      assert.deepStrictEqual(obj.copy(), obj)
-    });
-  })
-})
-describe('"org" package object', function() {
-  it('should have special attributes', function() {
-    const obj = pckg('', {}).take('org')
-    assert.ok(obj.attrs.hasOwnProperty(RHO))
-    assert.ok(obj.attrs.hasOwnProperty(SIGMA))
-    assert.ok(obj.attrs.hasOwnProperty(VTX))
-  })
-  describe('#with()', function() {
-    it('should fail on put', function() {
-      assert.throws(() => pckg('', {}).take('org').with({0: 'any'}))
+    describe('#with()', function() {
+      it('should fail on put', function() {
+        assert.throws(() => pckg('', {}).take('org').with({0: 'any'}))
+      })
     })
-  })
-  describe('#copy()', function() {
-    it('should return itself', function() {
-      const org = pckg('', {}).take('org')
-      assert.deepStrictEqual(org.copy(), org)
+    describe('#copy()', function() {
+      it('should return itself', function() {
+        const org = pckg('', {}).take('org')
+        assert.deepStrictEqual(org.copy(), org)
+      })
     })
-  })
-  describe('#take()', function() {
-    it('should return child "eolang" package object', function() {
-      const org = pckg('', {}).take('org')
-      assert.deepStrictEqual(org.take('eolang').take(RHO), org)
-    })
-    it('should fail on wrong path', function() {
-      const org = pckg('', {}).take('org')
-      assert.throws(() => org.take('wrong'))
+    describe('#take()', function() {
+      it('should return child "eolang" package object', function() {
+        const org = pckg('', {}).take('org')
+        assert.deepStrictEqual(org.take('eolang').take(RHO), org)
+      })
+      it('should fail on wrong path', function() {
+        const org = pckg('', {}).take('org')
+        assert.throws(() => org.take('wrong'))
+      })
     })
   })
 })

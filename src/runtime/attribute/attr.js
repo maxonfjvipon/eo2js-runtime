@@ -5,7 +5,7 @@ const lambda = require('./at-lambda')
 const fixed = require('./at-fixed')
 const vtx = require('./at-vtx')
 
-module.exports = {
+const attr = {
   once,
   simple,
   void: free,
@@ -13,3 +13,5 @@ module.exports = {
   fixed,
   vtx
 }
+
+module.exports = attr

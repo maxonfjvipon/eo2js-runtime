@@ -14,7 +14,7 @@ const at_simple = function(object) {
     },
     copy: function(_) {
       return at_simple(obj.copy())
-    },
+    }
   }
 }
 
