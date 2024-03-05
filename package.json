@@ -1,5 +1,5 @@
 {
-  "name": "eo2js",
+  "name": "eo2js-runtime",
   "version": "0.0.1",
   "description": "JavaScript runtime for EOLANG",
   "scripts": {
