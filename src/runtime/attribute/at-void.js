@@ -24,7 +24,7 @@ const at_void = function(name) {
     },
     copy: function(_) {
       if (obj) {
-        return at_simple(obj) // todo: obj.copy() ?
+        return at_simple(obj) // obj.copy() ?
       } else {
         return at_void(name)
       }

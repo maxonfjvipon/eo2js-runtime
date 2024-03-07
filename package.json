@@ -1,6 +1,6 @@
 {
   "name": "eo2js-runtime",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "JavaScript runtime for EOLANG",
   "scripts": {
     "test": "mocha"
