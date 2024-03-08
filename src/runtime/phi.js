@@ -20,9 +20,7 @@ const NAME = 'Φ'
  * @type {any}
  */
 const phi = {
-  attrs: {
-    [VTX]: at_vtx(vtx),
-  },
+  attrs: {},
   assets: {},
   with: function(_) {
     return phi
@@ -48,6 +46,8 @@ const phi = {
     return `${NAME} ${VTX}=${vtx}`
   }
 }
+
+phi.attrs[VTX] = at_vtx(vtx, phi)
 
 /**
  * Default empty package object.

@@ -36,11 +36,10 @@ const attrByPosition = function(attrs, pos) {
  */
 const object = function(sigma, name = 'object') {
   const vtx = vertex.next()
-  return {
+  const obj = {
     attrs: {
       [RHO]: at_simple(sigma),
-      [SIGMA]: at_fixed(at_simple(sigma)),
-      [VTX]: at_vtx(vtx)
+      [SIGMA]: at_fixed(at_simple(sigma))
     },
     assets: {},
     copy: function() {
@@ -104,6 +103,8 @@ const object = function(sigma, name = 'object') {
       return `${name}, ${VTX}=${vtx}`
     }
   }
+  obj.attrs[VTX] = at_vtx(vtx, obj)
+  return obj
 }
 
 module.exports = object
