@@ -70,7 +70,7 @@ const object = function(sigma, name = 'object') {
           attr = attrByPosition(attrs, pos)
         }
         if (!attrs.includes(attr)) {
-          throw new Error(`Attribute ${name} is absent, can't put`)
+          throw new Error(`Attribute ${attr} is absent, can't put`)
         }
         this.attrs[attr].put(binding)
       })
