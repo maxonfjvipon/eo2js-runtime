@@ -1,3 +1,6 @@
+const ErFailure = require('../error/ErFailure');
+const validated = require('../validated');
+
 /**
  * Lazy lambda attribute.
  * @param {object} object - Rho
@@ -7,10 +10,10 @@
 const at_lambda = function(object, callback) {
   return {
     put: function(_) {
-      throw new Error(`You can't override lambda expression`)
+      throw new ErFailure(`You can't override lambda expression`)
     },
     get: function() {
-      return callback(object)
+      return validated(() => callback(object))
     },
     copy: function(rho) {
       return at_lambda(rho, callback)

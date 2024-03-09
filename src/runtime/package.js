@@ -3,9 +3,10 @@ const path = require('path')
 const object = require('./object')
 const {LAMBDA, RHO} = require('./attribute/specials')
 const at_simple = require('./attribute/at-simple')
+const ErFailure = require('./error/ErFailure');
 
 /**
- * Try to find object by given directory and FQN.
+ * Try to find an object by given directory and FQN.
  * Context "this" should be set to the object {@link pckg}.
  * @param {String} dir - Relative directory where object may be placed
  * @param {String} name - Name of the current object
@@ -66,7 +67,7 @@ const pckg = function(fqn, sigma) {
     return fqn
   }
   obj.with = function(_) {
-    throw new Error(`Can't put object to Package object '${fqn}'`)
+    throw new ErFailure(`Can't put object to Package object '${fqn}'`)
   }
   obj.take = function(name) {
     let obj

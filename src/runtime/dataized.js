@@ -2,6 +2,7 @@ const {DELTA} = require('./attribute/specials.js')
 const {LAMBDA, PHI} = require('./attribute/specials')
 const {INT, FLOAT, BOOL, BYTES, STRING} = require('./data')
 const bytesOf = require('./bytes-of');
+const ErFailure = require('./error/ErFailure');
 
 /**
  * Dataized.
@@ -12,11 +13,11 @@ const bytesOf = require('./bytes-of');
 const dataized = function(object, type) {
   while (!object.assets.hasOwnProperty(DELTA)) {
     if (object.assets.hasOwnProperty(LAMBDA)) {
-      object = object.assets[LAMBDA](object)
+      object = object.take(LAMBDA)
     } else if (object.attrs.hasOwnProperty(PHI)) {
       object = object.take(PHI)
     } else {
-      throw new Error(`Can't dataize, asset ${DELTA} is absent`)
+      throw new ErFailure(`Can't dataize, asset ${DELTA} is absent`)
     }
   }
   let data = object.assets[DELTA]
@@ -33,7 +34,7 @@ const dataized = function(object, type) {
     } else if (type === BYTES) {
       data = bytes.asBytes()
     } else {
-      throw new Error(`Can't dataize to the given type (${type}), 
+      throw new ErFailure(`Can't dataize to the given type (${type}), 
       only ${INT}, ${FLOAT}, ${BOOL}, ${STRING}, ${BYTES} are allowed`)
     }
   } else if (Array.isArray(data)) {

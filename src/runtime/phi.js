@@ -1,7 +1,8 @@
 const pckg = require('./package')
 const vertex = require('./vertex')
-const {VTX, PHI, RHO, SIGMA} = require('./attribute/specials')
+const {VTX, PHI, RHO, SIGMA, LAMBDA} = require('./attribute/specials')
 const at_vtx = require('./attribute/at-vtx')
+const ErFailure = require('./error/ErFailure');
 
 /**
  * Vertex of global object scope.
@@ -26,8 +27,8 @@ const phi = {
     return phi
   },
   take: function(name) {
-    if ([PHI, SIGMA, RHO].includes(name)) {
-      throw new Error(`Can't take ${name} attribute from ${NAME} object`)
+    if ([PHI, SIGMA, RHO, LAMBDA, SIGMA].includes(name)) {
+      throw new ErFailure(`Can't take ${name} attribute from ${NAME} object`)
     }
     let object
     if (name === VTX) {

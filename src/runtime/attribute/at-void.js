@@ -1,4 +1,5 @@
 const at_simple = require('./at-simple')
+const ErFailure = require('../error/ErFailure');
 
 /**
  * Void attribute.
@@ -12,14 +13,14 @@ const at_void = function(name) {
       if (!obj) {
         obj = object
       } else {
-        throw new Error(`Void attribute ${name} is already set, can't reset`)
+        throw new ErFailure(`Void attribute ${name} is already set, can't reset`)
       }
     },
     get: function() {
       if (obj) {
         return obj
       } else {
-        throw new Error(`Void attribute ${name} is not set, can't take`)
+        throw new ErFailure(`Void attribute ${name} is not set, can't take`)
       }
     },
     copy: function(_) {

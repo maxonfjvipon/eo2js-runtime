@@ -16,7 +16,9 @@ const hexToInt = function(bytes) {
     } else if (hex.length === 4 && hex.indexOf('0x') === 0) {
       byte = parseInt(hex, 16)
     } else {
-      throw new Error(`Wrong format of element ${hex} in byte array ${bytes}\nShould be either integer of hexadecimal starting with '0x'`)
+      throw new Error(
+        `Wrong format of element ${hex} in byte array ${bytes}\nShould be either integer of hexadecimal starting with '0x'`
+      )
     }
     return byte
   })

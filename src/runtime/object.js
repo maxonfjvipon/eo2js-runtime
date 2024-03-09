@@ -3,6 +3,10 @@ const vertex = require('./vertex')
 const at_simple = require('./attribute/at-simple')
 const at_fixed = require('./attribute/at-fixed')
 const at_vtx = require('./attribute/at-vtx')
+const at_safe = require('./attribute/at-safe');
+const ErFailure = require('./error/ErFailure');
+const validated = require('./validated');
+const safe = require('./safe');
 
 /**
  * Filter object attributes function.
@@ -23,7 +27,7 @@ const attrByPosition = function(attrs, pos) {
   const filtered = attrs.filter(noDefault)
   const index = filtered.findIndex((_, index) => index === pos)
   if (index === -1) {
-    throw new Error(`There's no attribute with position ${pos}`)
+    throw new ErFailure(`There's no attribute with position ${pos}`)
   }
   return filtered[index]
 }
@@ -62,40 +66,48 @@ const object = function(sigma, name = 'object') {
         const pos = Number(attr)
         if (!isNaN(pos)) {
           if (pos < 0) {
-            throw new Error(`Can't put attribute by negative position (${pos})`)
+            throw new ErFailure(`Can't put attribute by negative position (${pos})`)
           }
           if (!Number.isInteger(pos)) {
-            throw new Error(`Can't put attribute by float position (${pos})`)
+            throw new ErFailure(`Can't put attribute by float position (${pos})`)
           }
           attr = attrByPosition(attrs, pos)
         }
         if (!attrs.includes(attr)) {
-          throw new Error(`Attribute ${attr} is absent, can't put`)
+          throw new ErFailure(`Attribute ${attr} is absent, can't put`)
         }
         this.attrs[attr].put(binding)
       })
       return this
     },
-    take: function(attr) {
-      const pos = Number(attr)
+    take: function(name) {
+      const pos = Number(name)
       if (!isNaN(pos)) {
         if (pos < 0) {
-          throw new Error(`Attribute position can't be negative (${attr})`)
+          throw new ErFailure(`Attribute position can't be negative (${name})`)
         }
         if (!Number.isInteger(pos)) {
-          throw new Error(`Can't take attribute by float position number (${attr})`)
+          throw new ErFailure(`Can't take attribute by float position number (${name})`)
         }
-        attr = attrByPosition(Object.keys(this.attrs), pos)
+        name = attrByPosition(Object.keys(this.attrs), pos)
       }
       let object
-      if (this.attrs.hasOwnProperty(attr)) {
-        object = this.attrs[attr].get()
+      if (name === LAMBDA) {
+        if (this.attrs.hasOwnProperty(LAMBDA)) {
+          throw new ErFailure(`${LAMBDA} can't be used as attribute, only as asset`)
+        }
+        if (!this.assets.hasOwnProperty(LAMBDA)) {
+          throw new ErFailure(`Can't take ${LAMBDA} asset because it's absent`)
+        }
+        object = validated(() => safe(this.assets[LAMBDA](this)))
+      } else if (this.attrs.hasOwnProperty(name)) {
+        object = at_safe(this.attrs[name]).get()
       } else if (this.attrs.hasOwnProperty(PHI)) {
-        object = this.take(PHI).take(attr)
+        object = this.take(PHI).take(name)
       } else if (this.assets.hasOwnProperty(LAMBDA)) {
-        object = this.assets[LAMBDA](this).take(attr)
+        object = this.take(LAMBDA).take(name)
       } else {
-        throw new Error(`Can't find ${attr} attribute`)
+        throw new ErFailure(`Can't find ${name} attribute`)
       }
       return object
     },
