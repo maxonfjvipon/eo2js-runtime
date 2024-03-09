@@ -2,50 +2,37 @@ const {DELTA} = require('./attribute/specials')
 const bytesOf = require('./bytes-of');
 
 /**
- * Cache.
- * @type {{}}
- */
-const cache = {}
-
-/**
  * Data to object converter.
- * @type {{toObject: (function(string|boolean|number|array.<string>|array.<number>): object)}}
+ * @type {{BYTES: string, FLOAT: string, BOOL: string, STRING: string, INT: string, toObject: (function(string|boolean|number|array.<string>|array.<number>): object)}}
  */
 const data = {
   toObject: function(data) {
-    let key
-    if (typeof data === 'number') {
-      key = Number(data).toString()
+    const phi = require('./phi')
+    const bytes = phi.take('org.eolang.bytes').copy()
+    bytes.assets[DELTA] = bytesOf(data).asBytes()
+    let object
+    if (Array.isArray(data)) {
+      object = bytes
     } else {
-      key = data.toString()
-    }
-    if (!cache.hasOwnProperty(key)) {
-      const phi = require('./phi')
-      const bytes = phi.take('org.eolang.bytes').copy()
-      bytes.assets[DELTA] = bytesOf(data).asBytes()
-      if (Array.isArray(data)) {
-        cache[key] = bytes
-      } else {
-        let take
-        if (typeof data === 'number') {
-          if (Number.isInteger(data)) {
-            take = 'org.eolang.int'
-          } else {
-            take = 'org.eolang.float'
-          }
-        } else if (typeof data === 'string') {
-          take = 'org.eolang.string'
-        } else if (typeof data === 'boolean') {
-          take = 'org.eolang.bool'
+      let take
+      if (typeof data === 'number') {
+        if (Number.isInteger(data)) {
+          take = 'org.eolang.int'
         } else {
-          throw new Error(`Can't convert to object data ${data} of given type ${typeof data}`)
+          take = 'org.eolang.float'
         }
-        cache[key] = phi.take(take).copy().with({
-          'as-bytes': bytes
-        })
+      } else if (typeof data === 'string') {
+        take = 'org.eolang.string'
+      } else if (typeof data === 'boolean') {
+        take = 'org.eolang.bool'
+      } else {
+        throw new Error(`Can't convert to object data ${data} of given type ${typeof data}`)
       }
+      object = phi.take(take).copy().with({
+        'as-bytes': bytes
+      })
     }
-    return cache[key]
+    return object
   },
   INT: 'int',
   STRING: 'string',
