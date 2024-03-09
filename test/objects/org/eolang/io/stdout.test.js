@@ -19,7 +19,6 @@ describe('stdout', function() {
       stdout({}, out).with({'text': data.toObject('Hello, world!')}),
       data.BOOL
     )
-    console.log(logs)
     assert.ok(logs.includes('Hello, world!'))
   });
 })
