@@ -1,4 +1,4 @@
-const at_void = require('../../../src/runtime/attribute/at-void')
+const at_void = require('../../../temp/runtime/attribute/at-void')
 const assert = require('assert')
 
 describe('at_void', function() {

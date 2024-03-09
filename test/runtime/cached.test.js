@@ -1,9 +1,9 @@
 const assert = require('assert')
-const object = require('../../src/runtime/object')
-const cached = require('../../src/runtime/cached');
-const at_lambda = require('../../src/runtime/attribute/at-lambda');
-const at_void = require('../../src/runtime/attribute/at-void');
-const {RHO} = require('../../src/runtime/attribute/specials');
+const object = require('../../temp/runtime/object')
+const cached = require('../../temp/runtime/cached');
+const at_lambda = require('../../temp/runtime/attribute/at-lambda');
+const at_void = require('../../temp/runtime/attribute/at-void');
+const {RHO} = require('../../temp/runtime/attribute/specials');
 
 describe('cached object', function() {
   describe('#copy()', function() {

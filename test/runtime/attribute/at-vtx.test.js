@@ -1,4 +1,4 @@
-const at_vtx = require('../../../src/runtime/attribute/at-vtx')
+const at_vtx = require('../../../temp/runtime/attribute/at-vtx')
 const assert = require('assert')
 
 describe('at_vtx', function() {

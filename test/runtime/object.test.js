@@ -1,8 +1,10 @@
-const {RHO, SIGMA, VTX, LAMBDA, PHI, DELTA} = require('../../src/runtime/attribute/specials.js')
+const {RHO, SIGMA, VTX, LAMBDA, PHI, DELTA} = require('../../temp/runtime/attribute/specials.js')
 const assert = require('assert')
-const object = require('../../src/runtime/object')
-const at_simple = require('../../src/runtime/attribute/at-simple')
-const at_void = require('../../src/runtime/attribute/at-void')
+const object = require('../../temp/runtime/object')
+const at_simple = require('../../temp/runtime/attribute/at-simple')
+const at_void = require('../../temp/runtime/attribute/at-void')
+const ErFailure = require('../../temp/runtime/error/ErFailure');
+const ErError = require('../../temp/runtime/error/ErError');
 
 describe('object', function() {
   it(`should have ${VTX} attribute`, function() {
@@ -38,7 +40,7 @@ describe('object', function() {
       second.attrs[PHI] = at_simple(phi)
       assert.deepStrictEqual(second.take('attr'), first)
     })
-    it(`should return object through ${LAMBDA} attribute`, function() {
+    it(`should return object through ${LAMBDA} asset`, function() {
       const first = object({})
       const second = object({})
       const third = object({})
@@ -95,6 +97,42 @@ describe('object', function() {
       assert.throws(() => obj.take(0))
       obj.attrs['attr'] = at_simple(object({}))
       assert.throws(() => obj.take(1))
+    })
+    it(`should throw an error if ${LAMBDA} attribute is being taken`, function() {
+      const obj = object({})
+      obj.attrs[LAMBDA] = at_simple({})
+      assert.throws(() => obj.take(LAMBDA), ErFailure)
+    })
+    it(`should throw an error if absent ${LAMBDA} asset is being taken`, function() {
+      assert.throws(() => object({}).take(LAMBDA), ErFailure)
+    })
+    it(`should validate the result of ${LAMBDA} asset`, function() {
+      const obj = object({})
+      obj.assets[LAMBDA] = function(_) {
+        throw new ErFailure('error')
+      }
+      assert.throws(() => obj.take(LAMBDA), ErError)
+    })
+    it(`should wrap with "safe" the result of ${LAMBDA} asset`, function() {
+      const obj = object({})
+      obj.assets[LAMBDA] = function(_) {
+        return {
+          take: (_) => {
+            throw new ErFailure('take')
+          },
+          with: (_) => {
+            throw new ErFailure('with')
+          }
+        }
+      }
+      const res = obj.take(LAMBDA)
+      assert.throws(() => res.take(''), ErError)
+      assert.throws(() => res.with({}), ErError)
+    })
+    it('should wrap attribute with "at_safe"', function() {
+      const obj = object({})
+      obj.attrs['x'] = at_void('x')
+      assert.throws(() => obj.take('x'), ErError)
     })
   })
   describe('#with()', function() {

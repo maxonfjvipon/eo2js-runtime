@@ -1,4 +1,4 @@
-const at_once = require('../../../src/runtime/attribute/at-once')
+const at_once = require('../../../temp/runtime/attribute/at-once')
 const assert = require('assert');
 
 describe('at_once', function() {

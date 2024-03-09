@@ -1,6 +1,6 @@
-const at_fixed = require('../../../src/runtime/attribute/at-fixed')
-const at_simple = require('../../../src/runtime/attribute/at-simple')
-const object = require('../../../src/runtime/object')
+const at_fixed = require('../../../temp/runtime/attribute/at-fixed')
+const at_simple = require('../../../temp/runtime/attribute/at-simple')
+const object = require('../../../temp/runtime/object')
 const assert = require('assert');
 
 describe('at_fixed', function() {

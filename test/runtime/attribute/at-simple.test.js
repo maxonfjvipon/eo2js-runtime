@@ -1,4 +1,4 @@
-const at_simple = require('../../../src/runtime/attribute/at-simple')
+const at_simple = require('../../../temp/runtime/attribute/at-simple')
 const assert = require('assert')
 
 describe('at_simple', function() {

@@ -1,4 +1,4 @@
-const vertex = require('../../src/runtime/vertex')
+const vertex = require('../../temp/runtime/vertex')
 const assert = require('assert');
 
 describe('vertex', function() {

@@ -1,7 +1,7 @@
 const assert = require('assert')
-const phi = require('../../src/runtime/phi')
-const object = require('../../src/runtime/object')
-const {VTX, PHI, SIGMA, RHO} = require('../../src/runtime/attribute/specials')
+const phi = require('../../temp/runtime/phi')
+const object = require('../../temp/runtime/object')
+const {VTX, PHI, SIGMA, RHO} = require('../../temp/runtime/attribute/specials')
 
 describe('Φ', function() {
   it('should have vtx attribute', function() {

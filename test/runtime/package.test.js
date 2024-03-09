@@ -1,7 +1,7 @@
-const phi = require('../../src/runtime/phi')
-const {RHO, SIGMA, VTX} = require('../../src/runtime/attribute/specials')
+const phi = require('../../temp/runtime/phi')
+const {RHO, SIGMA, VTX} = require('../../temp/runtime/attribute/specials')
 const assert = require('assert')
-const pckg = require('../../src/runtime/package')
+const pckg = require('../../temp/runtime/package')
 const fs = require('fs');
 const path = require('path');
 

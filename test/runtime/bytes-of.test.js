@@ -1,5 +1,5 @@
 const assert = require('assert');
-const bytesOf = require('../../src/runtime/bytes-of');
+const bytesOf = require('../../temp/runtime/bytes-of');
 
 describe('bytesOf', function() {
   describe('int', function() {

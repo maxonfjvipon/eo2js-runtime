@@ -1,6 +1,6 @@
-const object = require('../../../src/runtime/object')
+const object = require('../../../temp/runtime/object')
 const assert = require('assert');
-const at_cached = require('../../../src/runtime/attribute/at-cached');
+const at_cached = require('../../../temp/runtime/attribute/at-cached');
 
 describe('at_cached', function() {
   describe('#put()', function() {

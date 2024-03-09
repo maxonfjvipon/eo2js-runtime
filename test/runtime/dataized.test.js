@@ -1,9 +1,9 @@
-const {DELTA, PHI, LAMBDA} = require('../../src/runtime/attribute/specials')
+const {DELTA, PHI, LAMBDA} = require('../../temp/runtime/attribute/specials')
 const assert = require('assert')
-const dataized = require('../../src/runtime/dataized')
-const object = require('../../src/runtime/object')
-const {INT, FLOAT, BOOL, STRING, BYTES} = require('../../src/runtime/data')
-const at_simple = require('../../src/runtime/attribute/at-simple');
+const dataized = require('../../temp/runtime/dataized')
+const object = require('../../temp/runtime/object')
+const {INT, FLOAT, BOOL, STRING, BYTES} = require('../../temp/runtime/data')
+const at_simple = require('../../temp/runtime/attribute/at-simple');
 
 describe('dataized', function() {
   it(`should throw an error if ${DELTA} asset is absent`, function() {

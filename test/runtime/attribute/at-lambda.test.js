@@ -1,7 +1,9 @@
 const assert = require('assert');
-const at_lambda = require('../../../src/runtime/attribute/at-lambda');
-const at_void = require('../../../src/runtime/attribute/at-void');
-const object = require('../../../src/runtime/object');
+const at_lambda = require('../../../temp/runtime/attribute/at-lambda');
+const at_void = require('../../../temp/runtime/attribute/at-void');
+const object = require('../../../temp/runtime/object');
+const ErFailure = require('../../../temp/runtime/error/ErFailure');
+const ErError = require('../../../temp/runtime/error/ErError');
 
 describe('at_lambda', function() {
   describe('#put()', function() {
@@ -25,6 +27,14 @@ describe('at_lambda', function() {
         return rho.with({attr: put})
       }).get()
       assert.deepStrictEqual(obj.take('attr'), put)
-    });
+    })
+    it('should validate given callback', function() {
+      assert.throws(
+        at_lambda({}, (_) => {
+          throw new ErFailure('error')
+        }).get,
+        ErError
+      )
+    })
   })
 })
