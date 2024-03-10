@@ -2,18 +2,16 @@ const once = require('./at-once')
 const simple = require('./at-simple')
 const free = require('./at-void')
 const lambda = require('./at-lambda')
-const fixed = require('./at-fixed')
-const vtx = require('./at-vtx')
-const safe = require('./at-safe')
 
+/**
+ * API for attributes.
+ * @type {{lambda: (function(Object, function(Object): Object): *)|{}, void: (function(string): *)|{}, once: (function(Object): *)|{}, simple: (function(Object): *)|{}}}
+ */
 const attr = {
   once,
   simple,
   void: free,
-  safe,
   lambda,
-  fixed,
-  vtx
 }
 
 module.exports = attr

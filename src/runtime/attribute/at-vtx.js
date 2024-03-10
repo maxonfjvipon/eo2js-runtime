@@ -1,7 +1,7 @@
 const at_once = require('./at-once')
-const vertex = require('../vertex')
 const data = require('../data')
 const ErFailure = require('../error/ErFailure');
+const {RHO, VTX} = require('./specials');
 
 /**
  * Vertex attribute.
@@ -13,13 +13,13 @@ const at_vtx = function(vtx, rho) {
   return at_once(
     {
       get: function() {
-        return data.toObject(vtx).with({RHO: rho})
+        return data.toObject(vtx).with({[RHO]: rho})
       },
       put: function(_) {
-        throw new ErFailure(`You can't overwrite vertex`)
+        throw new ErFailure(`You can't overwrite ${VTX} attribute`)
       },
       copy: function(_) {
-        return at_vtx(vertex.next(), rho)
+        throw new ErFailure(`You can't explicitly copy ${VTX} attribute`)
       }
     }
   )

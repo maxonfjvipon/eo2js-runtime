@@ -1,12 +1,12 @@
 const {RHO, SIGMA, VTX, LAMBDA, PHI} = require('./attribute/specials.js')
 const vertex = require('./vertex')
-const at_simple = require('./attribute/at-simple')
-const at_fixed = require('./attribute/at-fixed')
 const at_vtx = require('./attribute/at-vtx')
 const at_safe = require('./attribute/at-safe');
 const ErFailure = require('./error/ErFailure');
 const validated = require('./validated');
 const safe = require('./safe');
+const at_rho = require('./attribute/at-rho');
+const at_sigma = require('./attribute/at-sigma');
 
 /**
  * Filter object attributes function.
@@ -42,12 +42,14 @@ const object = function(sigma, name = 'object') {
   const vtx = vertex.next()
   const obj = {
     attrs: {
-      [RHO]: at_simple(sigma),
-      [SIGMA]: at_fixed(at_simple(sigma))
+      [RHO]: at_rho(sigma),
+      [SIGMA]: at_sigma(sigma)
     },
     assets: {},
     copy: function() {
+      const rho = this.attrs[RHO]
       const copy = object(sigma, name)
+      copy.attrs[RHO] = rho.copy(copy)
       Object.keys(this.attrs)
         .filter(noDefault)
         .forEach((key) => {

@@ -1,19 +1,19 @@
+const {RHO} = require('./specials');
 /**
- * Simple attribute that just returns given object.
+ * Simple attribute.
  * @param {object} object - Object ot return
  * @return {any} - Simple attribute
  */
 const at_simple = function(object) {
-  let obj = object
   return {
-    put: function(object) {
-      obj = object
+    put: function(obj) {
+      object = obj
     },
     get: function() {
-      return obj
+      return object
     },
-    copy: function(_) {
-      return at_simple(obj.copy())
+    copy: function(rho) {
+      return at_simple(object.copy().with({[RHO]: rho}))
     }
   }
 }

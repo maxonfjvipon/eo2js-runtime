@@ -1,5 +1,7 @@
 const at_simple = require('../../../temp/runtime/attribute/at-simple')
+const object = require('../../../temp/runtime/object')
 const assert = require('assert')
+const {RHO} = require('../../../temp/runtime/attribute/specials');
 
 describe('at_simple', function() {
   describe('#put()', function() {
@@ -16,13 +18,32 @@ describe('at_simple', function() {
   })
   describe('#copy()', function() {
     it('should return new attribute', function() {
-      const origin = {copy: () => origin}
+      const origin = {
+        copy: (_) => origin,
+        with: (_) => origin
+      }
       const attr = at_simple(origin)
       assert.notDeepStrictEqual(attr.copy(), attr)
     })
-    it('should call #copy() on origin', function() {
-      const origin = {copy: () => 'Hello'}
-      assert.equal(at_simple(origin).copy().get(), 'Hello')
-    });
+    it('should call #copy() on object', function() {
+      let count = 0
+      const obj = {
+        copy: (_) => {
+          count++;
+          return obj
+        },
+        with: (_) => obj
+      }
+      at_simple(obj).copy()
+      assert.equal(count, 1)
+    })
+    it(`should update ${RHO} on object`, function() {
+      const obj = object({}, 'obj')
+      const rho = object({}, 'rho')
+      assert.deepStrictEqual(
+        at_simple(obj).copy(rho).get().take(RHO),
+        rho
+      )
+    })
   })
 })

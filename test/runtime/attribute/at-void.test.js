@@ -30,7 +30,7 @@ describe('at_void', function() {
     })
     it('should pass set object to new attribute', function() {
       const attr = at_void('void')
-      attr.put(42)
+      attr.put({copy: () => ({with: (_) => 42})})
       assert.equal(attr.copy().get(), 42)
     })
   })
