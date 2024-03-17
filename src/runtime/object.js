@@ -41,11 +41,21 @@ const attrByPosition = function(attrs, pos) {
 const object = function(sigma, name = 'object') {
   const vtx = vertex.next()
   const obj = {
+    /**
+     * Attributes.
+     */
     attrs: {
       [RHO]: at_rho(sigma),
       [SIGMA]: at_sigma(sigma)
     },
+    /**
+     * Assets.
+     */
     assets: {},
+    /**
+     * Copy itself.
+     * @return {Object} - Copied object.
+     */
     copy: function() {
       const rho = this.attrs[RHO]
       const copy = object(sigma, name)
@@ -61,6 +71,12 @@ const object = function(sigma, name = 'object') {
         })
       return copy
     },
+    /**
+     * Set attributes to the object.
+     * @param {Object} bindings - Attribute bindings
+     * @return {obj} - Self with attached attributes
+     * @throws ErFailure - If something wrong with bindings
+     */
     with: function(bindings) {
       const attrs = Object.keys(this.attrs)
       Object.keys(bindings).forEach((attr) => {
@@ -82,19 +98,25 @@ const object = function(sigma, name = 'object') {
       })
       return this
     },
-    take: function(name) {
-      const pos = Number(name)
+    /**
+     * Retrieve object by attribute name or position
+     * @param {String|Number} attr - Attribute name or position
+     * @return {Object} - Retrieved attribute by name or position
+     * @throws ErFailure - If something wrong with attribute retrieving
+     */
+    take: function(attr) {
+      const pos = Number(attr)
       if (!isNaN(pos)) {
         if (pos < 0) {
-          throw new ErFailure(`Attribute position can't be negative (${name})`)
+          throw new ErFailure(`Attribute position can't be negative (${attr})`)
         }
         if (!Number.isInteger(pos)) {
-          throw new ErFailure(`Can't take attribute by float position number (${name})`)
+          throw new ErFailure(`Can't take attribute by float position number (${attr})`)
         }
-        name = attrByPosition(Object.keys(this.attrs), pos)
+        attr = attrByPosition(Object.keys(this.attrs), pos)
       }
       let object
-      if (name === LAMBDA) {
+      if (attr === LAMBDA) {
         if (this.attrs.hasOwnProperty(LAMBDA)) {
           throw new ErFailure(`${LAMBDA} can't be used as attribute, only as asset`)
         }
@@ -102,17 +124,21 @@ const object = function(sigma, name = 'object') {
           throw new ErFailure(`Can't take ${LAMBDA} asset because it's absent`)
         }
         object = validated(() => safe(this.assets[LAMBDA](this)))
-      } else if (this.attrs.hasOwnProperty(name)) {
-        object = at_safe(this.attrs[name]).get()
+      } else if (this.attrs.hasOwnProperty(attr)) {
+        object = at_safe(this.attrs[attr]).get()
       } else if (this.attrs.hasOwnProperty(PHI)) {
-        object = this.take(PHI).take(name)
+        object = this.take(PHI).take(attr)
       } else if (this.assets.hasOwnProperty(LAMBDA)) {
-        object = this.take(LAMBDA).take(name)
+        object = this.take(LAMBDA).take(attr)
       } else {
-        throw new ErFailure(`Can't find ${name} attribute`)
+        throw new ErFailure(`Can't find ${attr} attribute`)
       }
       return object
     },
+    /**
+     * Print itself.
+     * @return {String} - String representation of object
+     */
     toString: function() {
       return `${name}, ${VTX}=${vtx}`
     }
